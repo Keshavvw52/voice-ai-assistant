@@ -1,0 +1,269 @@
+.authShell {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+  background: #08111f;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.background {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.03);
+  filter: saturate(1.06) brightness(0.82) contrast(1.02);
+}
+
+.veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.08), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(245, 158, 11, 0.08), transparent 28%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.38), rgba(7, 16, 34, 0.28));
+}
+
+.panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 980px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 420px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.brand {
+  padding: 48px;
+  background:
+    linear-gradient(180deg, rgba(12, 23, 43, 0.54), rgba(10, 17, 31, 0.42)),
+    linear-gradient(135deg, rgba(37, 99, 235, 0.12), transparent 60%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.1);
+  color: rgba(226, 232, 240, 0.8);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.headline {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(2.7rem, 5vw, 4.6rem);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.06em;
+  color: #f8fafc;
+}
+
+.headlineAccent {
+  color: #7dd3fc;
+}
+
+.copy {
+  max-width: 34ch;
+  margin-top: 18px;
+  color: rgba(226, 232, 240, 0.74);
+  line-height: 1.8;
+}
+
+.points {
+  display: grid;
+  gap: 14px;
+}
+
+.point {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.26);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.pointTitle {
+  color: #f8fafc;
+  font-size: 0.95rem;
+}
+
+.pointCopy {
+  margin-top: 6px;
+  color: rgba(191, 219, 254, 0.72);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.formCard {
+  padding: 42px 34px;
+  background: rgba(255, 255, 255, 0.22);
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.formTitle {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+
+.formSubtitle {
+  margin-top: 10px;
+  color: rgba(226, 232, 240, 0.86);
+  line-height: 1.7;
+}
+
+.form {
+  margin-top: 24px;
+  display: grid;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(248, 250, 252, 0.92);
+}
+
+.input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #f8fafc;
+  font: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.input::placeholder {
+  color: rgba(226, 232, 240, 0.68);
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(125, 211, 252, 0.8);
+  box-shadow: 0 0 0 4px rgba(125, 211, 252, 0.14);
+  transform: translateY(-1px);
+}
+
+.inputError {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08);
+}
+
+.helper {
+  min-height: 18px;
+  font-size: 0.78rem;
+  color: #dc2626;
+}
+
+.banner {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(127, 29, 29, 0.28);
+  border: 1px solid rgba(252, 165, 165, 0.24);
+  color: #fee2e2;
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.primaryButton {
+  margin-top: 4px;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0f766e, #0f172a);
+  color: #f8fafc;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.22);
+}
+
+.primaryButton:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.footer {
+  margin-top: 18px;
+  color: rgba(226, 232, 240, 0.86);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.switchButton {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #0f766e;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 860px) {
+  .panel {
+    grid-template-columns: 1fr;
+  }
+
+  .brand {
+    padding: 34px 24px 24px;
+  }
+
+  .formCard {
+    padding: 30px 24px;
+  }
+}
+
+@media (max-width: 520px) {
+  .authShell {
+    padding: 14px;
+  }
+
+  .panel {
+    border-radius: 22px;
+  }
+
+  .brand,
+  .formCard {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+}

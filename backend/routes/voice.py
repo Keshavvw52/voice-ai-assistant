@@ -4,12 +4,13 @@ Voice API Routes — the core pipeline:
 """
 
 import logging
-from fastapi import APIRouter, File, UploadFile, HTTPException
+from fastapi import APIRouter, Depends, File, UploadFile, HTTPException
 
 from services.stt_service import transcribe_audio
 from services.llm_service import classify_intent, build_response_text
 from services.tts_service import synthesize_speech
 from services import task_service
+from services.auth_service import get_current_user
 from models.schemas import VoiceUploadResponse, TranscriptResponse, IntentResponse
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,10 @@ router = APIRouter()
 
 
 @router.post("/upload", response_model=VoiceUploadResponse)
-async def upload_and_process(file: UploadFile = File(...)):
+async def upload_and_process(
+    file: UploadFile = File(...),
+    current_user=Depends(get_current_user),
+):
     """
     Full pipeline endpoint:
     1. Receive audio file
@@ -73,15 +77,16 @@ async def upload_and_process(file: UploadFile = File(...)):
 
     # --- Step 4: Task Engine ---
     current_tasks = []
+    user_id = current_user["id"]
 
     if intent == "create_task":
         task_title = intent_data.get("task", transcript)
         due_date = intent_data.get("due_date")
-        await task_service.create_task(task_title, due_date)
-        current_tasks = await task_service.list_tasks()
+        await task_service.create_task(user_id, task_title, due_date)
+        current_tasks = await task_service.list_tasks(user_id)
 
     elif intent == "list_tasks":
-        current_tasks = await task_service.list_tasks()
+        current_tasks = await task_service.list_tasks(user_id)
 
     elif intent == "delete_task":
         task_ref = intent_data.get("task", "").strip()
@@ -89,11 +94,11 @@ async def upload_and_process(file: UploadFile = File(...)):
         if not task_ref:
             intent_data["message"] = "Please specify which task to delete."
         else:
-            deleted = await task_service.delete_task_by_title(task_ref)
+            deleted = await task_service.delete_task_by_title(user_id, task_ref)
             if not deleted:
                 intent_data["message"] = f"I couldn't find a task matching '{task_ref}'"
 
-        current_tasks = await task_service.list_tasks()
+        current_tasks = await task_service.list_tasks(user_id)
 
     # --- Step 5: Build response text ---
     response_text = build_response_text(intent_data, current_tasks)
@@ -106,7 +111,7 @@ async def upload_and_process(file: UploadFile = File(...)):
         logger.warning(f"TTS failed for response '{response_text}': {e}")
 
     # --- Step 7: Log ---
-    await task_service.log_conversation(transcript, intent, response_text)
+    await task_service.log_conversation(user_id, transcript, intent, response_text)
 
     # --- Final Response ---
     return VoiceUploadResponse(

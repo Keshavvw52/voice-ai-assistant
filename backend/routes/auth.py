@@ -1,12 +1,17 @@
-from fastapi import APIRouter, HTTPException
-import aiosqlite
+import sqlite3
+from fastapi import APIRouter, HTTPException, Depends
 import re
 
-from services.auth_service import hash_password, verify_password, create_token
+from models.database import get_db
+from services.auth_service import (
+    create_token,
+    hash_password,
+    password_needs_rehash,
+    verify_password,
+)
 
 router = APIRouter()
 
-DB_PATH = "voice_ai.db"
 EMAIL_PATTERN = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
 
 
@@ -24,35 +29,44 @@ def validate_credentials(email: str | None, password: str | None):
 
 
 @router.post("/signup")
-async def signup(data: dict):
+async def signup(data: dict, db=Depends(get_db)):
     email, password = validate_credentials(data.get("email"), data.get("password"))
 
     hashed = hash_password(password)
 
     try:
-        async with aiosqlite.connect(DB_PATH) as db:
-            await db.execute(
-                "INSERT INTO users (email, password) VALUES (?, ?)",
-                (email, hashed),
-            )
-            await db.commit()
+        await db.execute(
+            "INSERT INTO users (email, password) VALUES (?, ?)",
+            (email, hashed),
+        )
+        await db.commit()
         return {"message": "User created"}
-    except:
-        raise HTTPException(status_code=400, detail="User already exists")
+
+    except sqlite3.IntegrityError:
+        raise HTTPException(
+            status_code=400,
+            detail="User already exists"
+        )
 
 
 @router.post("/login")
-async def login(data: dict):
+async def login(data: dict, db=Depends(get_db)):
     email, password = validate_credentials(data.get("email"), data.get("password"))
 
-    async with aiosqlite.connect(DB_PATH) as db:
-        cursor = await db.execute(
-            "SELECT password FROM users WHERE email = ?", (email,)
-        )
-        user = await cursor.fetchone()
+    cursor = await db.execute(
+        "SELECT id, email, password FROM users WHERE email = ?", (email,)
+    )
+    user = await cursor.fetchone()
 
-    if not user or not verify_password(password, user[0]):
+    if not user or not verify_password(password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    token = create_token({"sub": email})
+    if password_needs_rehash(user["password"]):
+        await db.execute(
+            "UPDATE users SET password = ? WHERE id = ?",
+            (hash_password(password), user["id"]),
+        )
+        await db.commit()
+
+    token = create_token({"sub": user["email"], "user_id": user["id"]})
     return {"access_token": token}

@@ -1,12 +1,17 @@
+import { getStoredToken } from "./auth"
+
 const API_HEADERS = {
   Accept: "application/json",
 }
 
 async function apiFetch(path, options = {}) {
+  const token = getStoredToken()
+
   const response = await fetch(path, {
     ...options,
     headers: {
       ...API_HEADERS,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
   })
